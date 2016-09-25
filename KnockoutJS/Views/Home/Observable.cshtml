@@ -1,0 +1,61 @@
+﻿
+@{
+    ViewBag.Title = "Observable";
+}
+
+<h2>Observable</h2>
+<div id="observable">
+    <p>My Product name is <span data-bind="text:productName"></span> and category is <span data-bind="text:productCat"></span></p>
+    <p><input data-bind="value:productName"/>
+    </p>
+    <p>
+        <input data-bind="value:productCat"/>
+    </p>
+</div>
+<div id="computed">
+    <p>Computed Observable</p>
+    <p> Your name is <span data-bind="text:fullName"></span></p>
+</div>
+
+<div id="observableArray">
+    <p>Observalble Array</p>
+    <form data-bind="submit:addNewItem">
+        Item to Add:<input data-bind='value:newItem, valueUpdate:"afterkeydown"'/>
+        <button type="submit" data-bind="enable:newItem().length>0">Add Item</button>
+        <p>Your current items</p>
+        <select multiple="multiple" width="100px" data-bind="options:items"></select>
+
+    </form>
+</div>
+@section scripts{
+    <script>
+
+        var viewModel = {
+            productName: ko.observable('widget'),
+            productCat: ko.observable('other')
+            
+        };
+
+        var computedViewModel=function() {
+            this.firstName = ko.observable('Shiva');
+            this.lastName = ko.observable('Sharma');
+            this.fullName = ko.computed(function() {
+                return this.firstName() + " " + this.lastName();
+            },this);
+        }
+
+        var arrayViewModel = function(items) {
+            this.items = ko.observableArray(items);
+            this.newItem = ko.observable("");
+            this.addNewItem = function() {
+                if (this.newItem() != "") {
+                    this.items.push(this.newItem());
+                    this.newItem("");
+                }
+            }.bind(this);
+        };
+        ko.applyBindings( new arrayViewModel(["First","Second","THird"]), document.getElementById("observableArray"));
+        ko.applyBindings(viewModel, document.getElementById("observable"));
+        ko.applyBindings(computedViewModel,document.getElementById("computed"));
+    </script>
+}
